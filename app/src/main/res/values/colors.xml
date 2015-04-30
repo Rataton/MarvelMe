@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFF</color>
+    <color name="overlay_image">#a20e0e0e</color>
+    <color name="primary">#E53935</color>
+    <color name="primary_dark">#ff8c1d1d</color>
+    <color name="text">#666</color>
+    <color name="accent">#ff380c0c</color>
+</resources>
