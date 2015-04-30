@@ -1,4 +1,4 @@
-package com.petitemasrata.marvelme.ui.fragment;
+package com.petitemasrata.marvelme.ui.adapter;
 
 import android.content.Context;
 import android.net.Uri;

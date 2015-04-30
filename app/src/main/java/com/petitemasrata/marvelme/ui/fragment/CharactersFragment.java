@@ -10,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.petitemasrata.marvelme.ui.fragment.CharactersListAdapter;
 import com.petitemasrata.marvelme.model.Character;
 import com.petitemasrata.marvelme.R;
+import com.petitemasrata.marvelme.ui.adapter.CharactersListAdapter;
 
 import java.util.ArrayList;
 
