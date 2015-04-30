@@ -2,4 +2,9 @@
     <string name="app_name">Marvel Me!</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_info">Info</string>
+    <string name="action_search">Buscar</string>
+    <string name="search_hint">¿Qué buscas?</string>
+    <string name="search_title">Buscar</string>
+    <string name="title_activity_search_results">Search Results</string>
 </resources>
