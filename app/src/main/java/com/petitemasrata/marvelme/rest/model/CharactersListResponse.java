@@ -1,14 +1,15 @@
-package com.petitemasrata.marvelme.rest;
+package com.petitemasrata.marvelme.rest.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
+import com.petitemasrata.marvelme.rest.Constants;
+import com.petitemasrata.marvelme.model.Character;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This class contains the structure of the response for the
- * {@link MarvelApiService#requestHeroesList(int, int, String, long, String, retrofit.Callback)}
+ * {@link com.petitemasrata.marvelme.rest.MarvelApiService#requestCharactersList(int, int, String, long, String, retrofit.Callback)}
  * */
 public class CharactersListResponse {
     @SerializedName(Constants.CODE_KEY)

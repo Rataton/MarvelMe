@@ -3,6 +3,7 @@ package com.petitemasrata.marvelme.ui.adapter;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +12,26 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.petitemasrata.marvelme.R;
 import com.petitemasrata.marvelme.model.Character;
+import com.petitemasrata.marvelme.rest.Constants;
+import com.petitemasrata.marvelme.rest.MarvelApiClient;
+import com.petitemasrata.marvelme.rest.model.CharactersListResponse;
+import com.petitemasrata.marvelme.rest.MarvelApiService;
+
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 import static java.util.Collections.EMPTY_LIST;
 
 public class CharactersListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private final int VIEW_CHARACTER = 0;
+    private final int VIEW_PROGRESS = 1;
 
     List <Character> characters = EMPTY_LIST;
     Context context;
@@ -31,13 +43,25 @@ public class CharactersListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         this.context = context;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        // Revisa si es el ultimo item, es null
+        return characters.get(position)!=null? VIEW_CHARACTER : VIEW_PROGRESS;
+    }
 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
-        View itemView = LayoutInflater.from(context)
-                .inflate(R.layout.item_character, viewGroup, false);
+        if(viewType == VIEW_CHARACTER) {
+            View itemView = LayoutInflater.from(context)
+                    .inflate(R.layout.item_character, viewGroup, false);
 
-        return new CharacterViewHolder(itemView);
+            return new CharacterViewHolder(itemView);
+        } else {
+            View itemView = LayoutInflater.from(context)
+                    .inflate(R.layout.item_progress, viewGroup, false);
+
+            return new ProgressViewHolder(itemView);
+        }
 
     }
 
@@ -46,6 +70,10 @@ public class CharactersListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         if(viewHolder instanceof CharacterViewHolder) {
 
             Character currentCharacter = characters.get(position);
+            Log.i("Su img", currentCharacter.getUrlImage().toString());
+            //if (!currentCharacter.getUrlImage().toString().equals("http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg")){
+                ((CharacterViewHolder)viewHolder).setImg(currentCharacter.getUrlImage());
+            //}
             ((CharacterViewHolder)viewHolder).setName(currentCharacter.getName());
         }
     }
@@ -54,6 +82,17 @@ public class CharactersListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public int getItemCount() {
         if (characters == null)
             return 0;
+
+        return characters.size();
+    }
+
+    /**
+     * When we load more characters, a {@link ProgressViewHolder} is added
+     * The  { @link EndlessRecyclerOnScrollListener } needs the number of real items  in the list.
+     * */
+    public int getCharacterItemsCount (){
+        if (isProgressViewVisible())
+            return characters.size() - 1;
 
         return characters.size();
     }
@@ -76,6 +115,37 @@ public class CharactersListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         notifyDataSetChanged();
     }
 
+    /**
+     * Make a request to the Marvel API to load 20 more characters
+     * The offset for the request is defined by {@link #getItemCount()}
+     * */
+    public void requestForMoreCharacters (){
+        showOnLoadViewHolder();
+        MarvelApiClient.getInstance(context)
+                .requestCharactersList(Constants.CHARACTERS_LIMIT, getCharacterItemsCount(), new Callback<CharactersListResponse>() {
+                    @Override
+                    public void success(CharactersListResponse charactersListResponse, Response response) {
+                        characters.remove(characters.size() - 1);
+                        addItemCollection(charactersListResponse.getCharacters());
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+
+                    }
+                });
+    }
+
+    private void showOnLoadViewHolder() {
+        characters.add(null);
+        notifyDataSetChanged();
+    }
+
+    public boolean isProgressViewVisible() {
+        return characters.contains(null);
+    }
+
+
     public class CharacterViewHolder extends RecyclerView.ViewHolder{
 
         @InjectView(R.id.img_character)
@@ -96,6 +166,12 @@ public class CharactersListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         public void setName(String name){
             txtName.setText(name);
+        }
+    }
+
+    public class ProgressViewHolder extends RecyclerView.ViewHolder{
+        public ProgressViewHolder(View itemView) {
+            super(itemView);
         }
     }
 

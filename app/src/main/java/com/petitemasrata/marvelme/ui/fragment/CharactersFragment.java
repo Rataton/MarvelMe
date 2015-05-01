@@ -6,18 +6,25 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.petitemasrata.marvelme.model.Character;
 import com.petitemasrata.marvelme.R;
+import com.petitemasrata.marvelme.rest.MarvelApiClient;
+import com.petitemasrata.marvelme.rest.model.CharactersListResponse;
 import com.petitemasrata.marvelme.ui.adapter.CharactersListAdapter;
+import com.petitemasrata.marvelme.ui.interfaces.EndlessRecyclerOnScrollListener;
 
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class CharactersFragment extends Fragment{
 
@@ -25,7 +32,7 @@ public class CharactersFragment extends Fragment{
     public Context CONTEXT;
 
     @InjectView(R.id.list_characters)
-    RecyclerView mListHeroes;
+    RecyclerView mListCharacters;
 
     CharactersListAdapter adapter;
 
@@ -50,7 +57,7 @@ public class CharactersFragment extends Fragment{
         View rootView = inflater.inflate(R.layout.fragment_characters, container, false);
         ButterKnife.inject(this, rootView);
 
-        initListHeroes();
+        initListCharacters();
         return rootView;
     }
 
@@ -58,48 +65,35 @@ public class CharactersFragment extends Fragment{
     public void onResume() {
         super.onResume();
 
+        MarvelApiClient.getInstance(CONTEXT).requestCharactersList(20, 300, new Callback<CharactersListResponse>() {
+            @Override
+            public void success(CharactersListResponse charactersListResponse, Response response) {
+                adapter.updateList(charactersListResponse.getCharacters());
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+            }
+        });
+
     }
 
     //================================================================================
     //Init Methods
     //================================================================================
-    private void initListHeroes() {
+    private void initListCharacters() {
         LinearLayoutManager lm = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL , false);
         adapter = new CharactersListAdapter(CONTEXT);
 
-        ArrayList<Character> characters = new ArrayList<Character>();
+       mListCharacters.addOnScrollListener(new EndlessRecyclerOnScrollListener(lm) {
+           @Override
+           public void onLoadMore(int current_page) {
+               adapter.requestForMoreCharacters();
+           }
+       });
 
-        Character mono1 = new Character();
-        mono1.setName("El Monigote");
-        characters.add(mono1);
-
-        Character mono2 = new Character();
-        mono2.setName("El Mitotero");
-        characters.add(mono2);
-
-        Character mono3 = new Character();
-        mono3.setName("El Matorral");
-        characters.add(mono3);
-
-        Character mono4 = new Character();
-        mono4.setName("El Mequetrefe");
-        characters.add(mono4);
-
-        Character mono5 = new Character();
-        mono5.setName("El Merolico");
-        characters.add(mono5);
-
-        for (int i = 6; i < 20; i++) {
-            Character monoT = new Character();
-            monoT.setName("MonoX " + i);
-            characters.add(monoT);
-
-        }
-
-        adapter.updateList(characters);
-
-        mListHeroes.setLayoutManager(lm);
-        mListHeroes.setAdapter(adapter);
+        mListCharacters.setLayoutManager(lm);
+        mListCharacters.setAdapter(adapter);
 
     }
 

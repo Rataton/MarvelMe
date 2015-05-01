@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.petitemasrata.marvelme.rest.model.CharactersListResponse;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -38,7 +39,7 @@ public class MarvelApiClient {
 
         //Retrofit adapter to make requests
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setLogLevel(RestAdapter.LogLevel.BASIC)
+                .setLogLevel(RestAdapter.LogLevel.BASIC) // Escribe en terminal cada que hace una peticion http
                 .setEndpoint(Constants.MAIN_URL)
                 .setConverter(new GsonConverter(gsonConf))
                 .build();
@@ -62,7 +63,7 @@ public class MarvelApiClient {
         Long ts = UtilMethods.generateTimeStamp();
         String hash = UtilMethods.generateHash(ts);
 
-        getApiService().requestHeroesList(limit,
+        getApiService().requestCharactersList(limit,
                 offset,
                 Constants.API_PUBLIC_KEY,
                 ts,
@@ -70,3 +71,4 @@ public class MarvelApiClient {
                 callback);
     }
 }
+
