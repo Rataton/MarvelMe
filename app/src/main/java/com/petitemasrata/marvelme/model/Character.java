@@ -2,15 +2,86 @@ package com.petitemasrata.marvelme.model;
 
 import android.net.Uri;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import com.petitemasrata.marvelme.rest.Constants;
+
 public class Character {
 
+    @SerializedName(Constants.ID_KEY)
     int id;
+
+    @SerializedName(Constants.NAME_KEY)
     String name;
+
+    @SerializedName(Constants.DESCRIPTION_KEY)
     String description;
+
+    @Expose
     Uri urlImage;
+
+    @Expose
     int availableComics;
+
+    @Expose
     int availableSeries;
+
+    @Expose
     int availableStories;
+
+    /**
+     * Build a {@link Character} from a JsonObject.
+     * To build it, extract all the nested data from {@code characterData}
+     * */
+    public static Character buildFromJson (JsonObject characterData) {
+        Gson gson = new Gson();
+        Character currentCharacter = gson.fromJson(characterData, Character.class);
+        currentCharacter.setUrlImage(extractCharacterImgFromJson(characterData));
+        currentCharacter.setAvailableComics(
+                extractCharacterAvailableResource(Constants.COMICS_KEY, characterData));
+        currentCharacter.setAvailableSeries(
+                extractCharacterAvailableResource(Constants.SERIES_KEY, characterData));
+        currentCharacter.setAvailableStories(
+                extractCharacterAvailableResource(Constants.STORIES_KEY, characterData));
+
+        return currentCharacter;
+    }
+
+    /**
+     * Use a JsonObject that contains the character data to extract the character thumbnail image <br>
+     * <a href="http://developer.marvel.com/docs#!/public/getCreatorCollection_get_0">Check the general Json response</a>
+     *
+     * @return empty string if there is no image
+     * */
+    private static Uri extractCharacterImgFromJson(JsonObject characterData) {
+        if(characterData.get(Constants.THUMBNAIL_KEY).isJsonNull())
+            return Uri.EMPTY;
+        // First obtain the image url and then obtain the extension of that image
+        String imgUrl = characterData.get(Constants.THUMBNAIL_KEY).getAsJsonObject()
+                .get(Constants.PATH_KEY).getAsString() + "." +
+                characterData.get(Constants.THUMBNAIL_KEY).getAsJsonObject()
+                        .get(Constants.EXTENSION_KEY).getAsString();
+
+        return Uri.parse(imgUrl);
+    }
+
+    /**
+     *Try to extract the mount of a character resource, like comics, stories or series.
+     * @param availableResource The string key for the resource, it could be: <br>
+     *                          {@link Constants#COMICS_KEY}<br>
+     *                          {@link Constants#SERIES_KEY}<br>
+     *                          {@link Constants#STORIES_KEY}<br>
+     * */
+    private static int extractCharacterAvailableResource(String availableResource, JsonObject characterData) throws IllegalArgumentException {
+        if(!availableResource.equals(Constants.COMICS_KEY) &&
+                !availableResource.equals(Constants.STORIES_KEY) && !availableResource.equals(Constants.SERIES_KEY))
+            throw new IllegalArgumentException();
+        else
+            return characterData.get(availableResource).getAsJsonObject().get(Constants.AVAILABLE_KEY).getAsInt();
+    }
+
 
     public int getId() {
         return id;
@@ -70,13 +141,13 @@ public class Character {
 
     @Override
     public String toString() {
-        String character = name +
+        String hero = name +
                 "\n Description:" + description +
                 "\n img:"+ urlImage +
                 "\n available comics:"+ availableComics +
                 "\n available series:"+ availableSeries +
                 "\n available stories:"+ availableStories;
 
-        return character;
+        return hero;
     }
 }

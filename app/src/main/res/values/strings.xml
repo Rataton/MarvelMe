@@ -7,4 +7,9 @@
     <string name="search_hint">¿Qué buscas?</string>
     <string name="search_title">Buscar</string>
     <string name="title_activity_search_results">Search Results</string>
+    <string name="title_section1">Personajes</string>
+    <string name="title_section2">Comics</string>
+    <string name="title_section3">Creadores</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>
