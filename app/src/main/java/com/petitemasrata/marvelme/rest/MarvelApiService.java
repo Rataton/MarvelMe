@@ -1,6 +1,7 @@
 package com.petitemasrata.marvelme.rest;
 
 import com.petitemasrata.marvelme.rest.model.CharactersListResponse;
+import com.petitemasrata.marvelme.rest.model.ComicsListResponse;
 
 import retrofit.Callback;
 import retrofit.http.GET;
@@ -16,6 +17,14 @@ public interface MarvelApiService {
                                       @Query(Constants.HASH_PARAM) String hash,
                                       Callback<CharactersListResponse> callback);
 
+
+    @GET(Constants.COMICS_URL)
+    public void requestComicsList(@Query(Constants.LIMIT_PARAM) int limit,
+                                  @Query(Constants.OFFSET_PARAM) int offset,
+                                  @Query(Constants.API_KEY_PARAM) String apiKey,
+                                  @Query(Constants.TS_PARAM) long ts,
+                                  @Query(Constants.HASH_PARAM) String hash,
+                                  Callback<ComicsListResponse> callback);
 
 
 }

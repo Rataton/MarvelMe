@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.petitemasrata.marvelme.ui.fragment.CharactersFragment;
+import com.petitemasrata.marvelme.ui.fragment.ComicsFragment;
 import com.petitemasrata.marvelme.ui.fragment.NavigationDrawerFragment;
 
 import butterknife.ButterKnife;
@@ -67,7 +68,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                             .commit();
                     break;
                 case 1:
-//                    fragment = new ComicsFragment();
+                    fragment = new ComicsFragment();
+
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, fragment)
+                            .commit();
                     break;
                 case 2:
 //                    fragment = new CreatorsFragment();
