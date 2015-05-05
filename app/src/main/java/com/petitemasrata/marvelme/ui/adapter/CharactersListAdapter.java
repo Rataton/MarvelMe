@@ -71,9 +71,7 @@ public class CharactersListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
             Character currentCharacter = characters.get(position);
             Log.i("Su img", currentCharacter.getUrlImage().toString());
-            //if (!currentCharacter.getUrlImage().toString().equals("http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg")){
-                ((CharacterViewHolder)viewHolder).setImg(currentCharacter.getUrlImage());
-            //}
+            ((CharacterViewHolder)viewHolder).setImg(currentCharacter.getUrlImage());
             ((CharacterViewHolder)viewHolder).setName(currentCharacter.getName());
         }
     }
